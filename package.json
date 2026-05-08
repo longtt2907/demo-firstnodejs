@@ -1,0 +1,24 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "nodejs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/longtt2907/demo-firstnodejs.git"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Long Long",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/longtt2907/demo-firstnodejs/issues"
+  },
+  "homepage": "https://github.com/longtt2907/demo-firstnodejs#readme"
+}
