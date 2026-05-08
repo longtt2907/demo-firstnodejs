@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/longtt2907/demo-firstnodejs/issues"
   },
-  "homepage": "https://github.com/longtt2907/demo-firstnodejs#readme"
+  "homepage": "https://github.com/longtt2907/demo-firstnodejs#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
