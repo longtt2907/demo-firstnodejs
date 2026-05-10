@@ -36,12 +36,15 @@ const handleCreateUser = async (
 // console.log("insert a new user");
 
 const getAllUser = async () => {
-
-
     const allUser = await prisma.user.findMany();
     return allUser;
-
 }
+
+const getAllRole = async () => {
+    const allRole = await prisma.role.findMany();
+    return allRole;
+}
+
 const handleDeleteUser = async (id: string) => {
     const deleteUser = await prisma.user.delete({
         where: { id: +id }
@@ -81,4 +84,4 @@ const updateUserByID = async (fullname: string,
     //     console.log(err);
     // }
 }
-export { handleCreateUser, getAllUser, handleDeleteUser, getUserByID, updateUserByID }
+export { getAllRole, handleCreateUser, getAllUser, handleDeleteUser, getUserByID, updateUserByID }

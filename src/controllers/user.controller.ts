@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { QueryResult } from "mysql2";
-import { getAllUser, handleCreateUser, handleDeleteUser, getUserByID, updateUserByID } from "services/user.service";
+import { getAllUser, handleCreateUser, handleDeleteUser, getUserByID, updateUserByID, getAllRole } from "services/user.service";
 
 const getHomePage = async (req: Request, res: Response) => {
     const users = await getAllUser();
@@ -8,13 +8,17 @@ const getHomePage = async (req: Request, res: Response) => {
         users: users
     });
 }
-const getCreateUserPage = (req: Request, res: Response) => {
-    return res.render("create-user");
+const getCreateUserPage = async (req: Request, res: Response) => {
+    const roles = await getAllRole();
+
+    return res.render("admin/user/create.ejs", {
+        roles
+    });
 }
 const postCreateUser = async (req: Request, res: Response) => {
     //object destructering
-    const { fullName, email, address } = req.body;
-    await handleCreateUser(fullName, email, address);
+    const { fullName, username, phone, role, address } = req.body;
+    // await handleCreateUser(fullName, email, address);
     return res.redirect("/");
 }
 const postDeleteUser = async (req: Request, res: Response) => {
