@@ -1,19 +1,48 @@
 import { Request, Response } from "express";
-import { handleCreateUser } from "../services/user.service";
+import { QueryResult } from "mysql2";
+import { getAllUser, handleCreateUser, handleDeleteUser, getUserByID, updateUserByID } from "services/user.service";
 
-const getHomePage = (req: Request, res: Response) => {
-    return res.render("home");
+const getHomePage = async (req: Request, res: Response) => {
+    const users = await getAllUser();
+    return res.render("home", {
+        users: users
+    });
 }
 const getCreateUserPage = (req: Request, res: Response) => {
     return res.render("create-user");
 }
-const postCreateUserPage = (req: Request, res: Response) => {
+const postCreateUser = async (req: Request, res: Response) => {
     //object destructering
     const { fullName, email, address } = req.body;
-
-    console.log("Check email: ", email)
-    console.log("Check fullname: ", fullName);
-    handleCreateUser(fullName, email, address);
+    await handleCreateUser(fullName, email, address);
     return res.redirect("/");
 }
-export { getHomePage, getCreateUserPage, postCreateUserPage };
+const postDeleteUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    await handleDeleteUser(id as string);
+    return res.redirect("/")
+}
+
+const getViewUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = await getUserByID(id as string);
+    // console.log(user[0]);
+    // console.log(id);
+    console.log(user);
+    return res.render("view-user", {
+        id: id,
+        user: user
+    });
+
+}
+const postUpdateUser = async (req: Request, res: Response) => {
+    const { id, fullName, email, address } = req.body;
+    console.log(id, email)
+    await updateUserByID(fullName, email, address, id);
+    return res.redirect("/")
+}
+
+
+
+
+export { getHomePage, getCreateUserPage, postCreateUser, postDeleteUser, getViewUser, postUpdateUser };
