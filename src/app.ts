@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config";
 import webRoutes from "routes/web";
 import getConnection from "config/database";
+import { init_database } from "config/seed";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -19,6 +20,10 @@ app.use(express.static('public'));
 
 //config routes
 webRoutes(app);
+
+
+//init database
+init_database();
 
 //config database
 getConnection();
