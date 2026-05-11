@@ -1,12 +1,7 @@
 import { Request, Response } from "express";
-import { QueryResult } from "mysql2";
 import { getAllUser, handleCreateUser, handleDeleteUser, getUserByID, updateUserByID, getAllRole } from "services/user.service";
-
 const getHomePage = async (req: Request, res: Response) => {
-    const users = await getAllUser();
-    return res.render("home", {
-        users: users
-    });
+    return res.render("client/home/show.ejs");
 }
 const getCreateUserPage = async (req: Request, res: Response) => {
     const roles = await getAllRole();
@@ -17,34 +12,41 @@ const getCreateUserPage = async (req: Request, res: Response) => {
 }
 const postCreateUser = async (req: Request, res: Response) => {
     //object destructering
+
     const { fullName, username, phone, role, address } = req.body;
-    // await handleCreateUser(fullName, email, address);
-    return res.redirect("/");
+    const file = req.file;
+    const avatar = file?.filename || "";
+    await handleCreateUser(fullName, username, address, phone, avatar, role);
+    return res.redirect("/admin/user");
 }
 const postDeleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     await handleDeleteUser(id as string);
-    return res.redirect("/")
+    return res.redirect("/admin/user")
 }
 
 const getViewUser = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const roles = await getAllRole();
     const user = await getUserByID(id as string);
     // console.log(user[0]);
     // console.log(id);
     console.log(user);
-    return res.render("view-user", {
+    return res.render("admin/user/detail.ejs", {
         id: id,
-        user: user
+        user: user,
+        roles
     });
 
 }
 const postUpdateUser = async (req: Request, res: Response) => {
-    const { id, fullName, email, address } = req.body;
-    console.log(id, email)
-    await updateUserByID(fullName, email, address, id);
-    return res.redirect("/")
+    const { id, fullName, address, role, phone } = req.body;
+    const file = req.file;
+    const avatar = file?.filename || "";
+    await updateUserByID(fullName, address, phone, role, avatar, id);
+    return res.redirect("/admin/user")
 }
+
 
 
 

@@ -1,20 +1,30 @@
 import { prisma } from "config/client";
-import getConnection from "../config/database";
-import { RowDataPacket } from 'mysql2/promise';
-
+import { ACCOUNT_TYPE } from "config/constants";
+import * as bcrypt from "bcrypt";
+const saltRounds = 10;
+const hashPassword = async (plainText: string) => {
+    return await bcrypt.hash(plainText, saltRounds);
+}
 const handleCreateUser = async (
-    fullname: string,
+    fullName: string,
     email: string,
-    address: string
+    address: string,
+    phone: string,
+    avatar: string,
+    role: String
 ) => {
+    const defaultPassword = await hashPassword("123456")
     const newUser = await prisma.user.create({
         data: {
 
-            fullName: fullname,
+            fullName: fullName,
             username: email,
             address: address,
-            password: "",
-            accountType: ""
+            password: defaultPassword,
+            accountType: ACCOUNT_TYPE.SYSTEM,
+            phone: phone,
+            avatar: avatar,
+            roleId: +role
         }
     })
     return newUser;
@@ -57,18 +67,17 @@ const getUserByID = async (id: string) => {
 }
 
 const updateUserByID = async (fullname: string,
-    email: string,
-    address: string, id: string) => {
+    address: string, phone: string, roleId: string, avatar: string, id: string,) => {
+
     const updateUser = await prisma.user.update({
         where: { id: +id },
         data: {
             fullName: fullname,
-            username: email,
             address: address,
-
+            phone: phone,
+            roleId: +roleId,
+            ...(avatar !== "" && { avatar: avatar })
         }
-
-
     })
     return updateUser;
     // const connection = await getConnection();
@@ -84,4 +93,4 @@ const updateUserByID = async (fullname: string,
     //     console.log(err);
     // }
 }
-export { getAllRole, handleCreateUser, getAllUser, handleDeleteUser, getUserByID, updateUserByID }
+export { hashPassword, getAllRole, handleCreateUser, getAllUser, handleDeleteUser, getUserByID, updateUserByID }

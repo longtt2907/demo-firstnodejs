@@ -16,4 +16,4 @@ const getAdminProductPage = async (req: Request, res: Response) => {
 const getAdminOrderPage = async (req: Request, res: Response) => {
     return res.render("admin/order/show.ejs");
 }
-export { getDashBoardPage, getAdminUserPage, getAdminProductPage, getAdminOrderPage }
+export { getDashBoardPage, getAdminUserPage, getAdminProductPage, getAdminOrderPage, }

@@ -22,10 +22,35 @@
                             <h1 class="mt-4">Manage Product</h1>
                             <ol class="breadcrumb mb-4">
                                 <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Users</li>
+                                <li class="breadcrumb-item active">Products</li>
                             </ol>
-                            <div>Table Product</div>
+                            <div style="display:flex; justify-content: space-between;align-items: center;">
+                                <h5>Table Product:
+                                </h5>
+                                <!-- <img src="/images/gas-gas-ec-300-2009-1432527870112.jpg"> -->
+                                <div>
+                                    <a href="/admin/create-product" class="btn btn-warning">Create new
+                                        product</a>
+                                </div>
+                            </div>
+                            <hr />
+                            <div>
+                                <div>
+                                    <table class="table table-hover table-bordered">
+                                        <thead>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Price</th>
+                                            <th>Factory</th>
+                                            <th>Action</th>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
+
 
                     </main>
                     <%- include(`../layout/footer`); -%>

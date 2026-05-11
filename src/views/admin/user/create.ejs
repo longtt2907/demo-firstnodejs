@@ -41,7 +41,8 @@
                                     <div>
                                         <div style="width: 600;margin: auto;">
                                             <h3 style="padding:10px 0">Create new User</h3>
-                                            <form action="/handle-create-user" method="post">
+                                            <form action="/admin/handle-create-user" method="post"
+                                                enctype="multipart/form-data">
                                                 <div class="mb-3">
                                                     <label class="form-label">Full Name:</label>
                                                     <input name="fullName" type="text" class="form-control"
@@ -72,7 +73,7 @@
                                                 <div class="mb-3">
                                                     <label for="formFile" class="form-label">Avatar</label>
                                                     <input class="form-control" type="file" id="avatarFile"
-                                                        accept=".png, .jpg, .jpeg">
+                                                        accept=".png, .jpg, .jpeg" name="avatar">
                                                 </div>
                                                 <div class="mb-3">
                                                     <img style="max-height: 250px; display: none;" alt="avatar preview"
