@@ -64,7 +64,6 @@
                                                     <div class="mb-3 col-6">
                                                         <label for=" inputState" class="form-label">Role</label>
                                                         <select id="inputState" class="form-select" name="role">
-                                                            <option selected>Choose...</option>
                                                             <% roles.forEach((role,index)=> {%>
                                                                 <% if (role.id==user.roleId) { %>
                                                                     <option value="<%=role.id%>" selected>

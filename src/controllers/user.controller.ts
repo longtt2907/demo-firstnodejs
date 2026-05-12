@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import { getAllUser, handleCreateUser, handleDeleteUser, getUserByID, updateUserByID, getAllRole } from "services/user.service";
+import { getAllUser, handleCreateUser, handleDeleteUser, getUserByID, updateUserByID, getAllRole } from "services/admin/user.service";
+import { getProducts } from "services/client/item.service";
 const getHomePage = async (req: Request, res: Response) => {
-    return res.render("client/home/show.ejs");
+    const products = await getProducts();
+    return res.render("client/home/show.ejs", { products });
 }
 const getCreateUserPage = async (req: Request, res: Response) => {
     const roles = await getAllRole();
@@ -46,8 +48,6 @@ const postUpdateUser = async (req: Request, res: Response) => {
     await updateUserByID(fullName, address, phone, role, avatar, id);
     return res.redirect("/admin/user")
 }
-
-
 
 
 

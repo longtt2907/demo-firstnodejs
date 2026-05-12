@@ -46,61 +46,71 @@
                                                 </div>
                                                 <%})%>
 
-                                                    <h3 style="padding:10px 0">Create a product</h3>
-                                                    <form action="/admin/create-product" method="post"
+                                                    <h3 style="padding:10px 0">Update a product</h3>
+                                                    <form action="/admin/update-product" method="post"
                                                         enctype="multipart/form-data">
+                                                        <input name="id" type="text" value="<%= product.id%>"
+                                                            style="display: none;">
                                                         <div class="mb-3">
                                                             <label class="form-label">Name:</label>
                                                             <input name="name" type="text" class="form-control"
-                                                                placeholder="Your name" value="<%=oldData.name%>">
+                                                                placeholder="Your name" value="<%=product.name%>">
                                                         </div>
                                                         <div class="mb-3">
                                                             <label class="form-label">Price:</label>
                                                             <input name="price" type="number" class="form-control"
-                                                                value="<%=oldData.price%>">
+                                                                value="<%=product.price%>">
                                                         </div>
                                                         <div class="mb-3">
                                                             <label class="form-label">Detail description:</label>
                                                             <textarea name="detailDesc" class="form-control"
-                                                                rows="2"><%=oldData.detailDesc%></textarea>
+                                                                rows="2"><%=product.detailDesc%></textarea>
                                                         </div>
                                                         <div class="row">
                                                             <div class="mb-3 col-6">
                                                                 <label for="inputCity" class="form-label">Short
                                                                     description</label>
                                                                 <input type="text" class="form-control" name="shortDesc"
-                                                                    value="<%=oldData.shortDesc%>">
+                                                                    value="<%=product.shortDesc%>">
                                                             </div>
                                                             <div class="mb-3 col-6">
                                                                 <label for="inputCity"
                                                                     class="form-label">Quantity</label>
                                                                 <input type="number" class="form-control"
-                                                                    name="quantity" value="<%=oldData.quantity%>">
+                                                                    name="quantity" value="<%=product.quantity%>">
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="mb-3 col-6">
                                                                 <label class="form-label">Factory</label>
                                                                 <select name="factory" class="form-select">
-                                                                    <option value="APPLE">Apple (MacBook)</option>
-                                                                    <option value="ASUS">Asus</option>
-                                                                    <option value="LENOVO">Lenovo</option>
-                                                                    <option value="DELL">Dell</option>
-                                                                    <option value="LG">LG</option>
-                                                                    <option value="ACER">Acer</option>
+                                                                    <% factoryOptions.forEach((factory,index)=> {%>
+                                                                        <% if (factory.value==product.factory) { %>
+                                                                            <option value="<%=factory.value%>" selected>
+                                                                                <%=factory.name%>
+                                                                            </option>
+                                                                            <% } else { %>
+                                                                                <option value="<%=factory.value%>">
+                                                                                    <%=factory.name%>
+                                                                                </option>
+                                                                                <% } %>
+                                                                                    <%})%>
                                                                 </select>
                                                             </div>
                                                             <div class="mb-3 col-6">
                                                                 <label class="form-label">Target</label>
                                                                 <select name="target" class="form-select">
-                                                                    <option value="GAMING">Gaming</option>
-                                                                    <option value="SINHVIEN-VANPHONG">Sinh viên - Văn
-                                                                        phòng
-                                                                    </option>
-                                                                    <option value="THIET-KE-DO-HOA">Thiết kế đồ họa
-                                                                    </option>
-                                                                    <option value="MONG-NHE">Mỏng nhẹ</option>
-                                                                    <option value="DOANH-NHAN">Doanh nhân</option>
+                                                                    <% targetOptions.forEach((target,index)=> {%>
+                                                                        <% if (target.value==product.target) { %>
+                                                                            <option value="<%=target.value%>" selected>
+                                                                                <%=target.name%>
+                                                                            </option>
+                                                                            <% } else { %>
+                                                                                <option value="<%=target.value%>">
+                                                                                    <%=target.name%>
+                                                                                </option>
+                                                                                <% } %>
+                                                                                    <%})%>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -111,8 +121,16 @@
                                                                 accept=".png, .jpg, .jpeg" name="image">
                                                         </div>
                                                         <div class="mb-3">
-                                                            <img style="max-height: 250px; display: none;"
-                                                                alt="avatar preview" id="avatarPreview" />
+                                                            <% if (product.image) { %>
+
+                                                                <img style="max-height: 250px;display:block;"
+                                                                    alt="avatar preview" id="avatarPreview"
+                                                                    src="/images/product/<%=product.image%>" />
+                                                                <% } else { %>
+
+                                                                    <img style="max-height: 250px;display:none;"
+                                                                        alt="avatar preview" id="avatarPreview" />
+                                                                    <% } %>
                                                         </div>
                                                         <!-- <img style="max-height: 250px; display: none;" alt="avatar preview"
                                                     id="avatarPreview" /> -->

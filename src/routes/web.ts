@@ -3,7 +3,8 @@ import { getHomePage, getCreateUserPage, postCreateUser, postDeleteUser, getView
 import { getAdminOrderPage, getAdminProductPage, getAdminUserPage, getDashBoardPage } from "controllers/admin/dashboard";
 import fileUploadMiddleware from "src/middleware/multer";
 import { getProductDetailPage } from "controllers/client/client.controller";
-import { getAdminCreateProductPage, postAdminCreateProduct } from "controllers/admin/product.controller";
+import { getAdminCreateProductPage, getUpdateProductPage, postAdminCreateProduct, postDeleteProduct, postUpdateProduct } from "controllers/admin/product.controller";
+import { getLoginPage, getRegisterPage, postRegister } from "controllers/client/auth.controller";
 const router = express.Router();
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -11,7 +12,7 @@ const webRoutes = (app: Express) => {
 
     //client
     router.get("/", getHomePage);
-    router.get("/product/1", getProductDetailPage)
+    router.get("/product/:id", getProductDetailPage)
 
 
 
@@ -36,15 +37,21 @@ const webRoutes = (app: Express) => {
 
     //admin product
     router.get("/admin/product", getAdminProductPage);
-    router.get("/admin/create-product", getAdminCreateProductPage)
-    router.post("/admin/create-product", fileUploadMiddleware('image', 'images/product'), postAdminCreateProduct)
+    router.get("/admin/create-product", getAdminCreateProductPage);
+    router.post("/admin/create-product", fileUploadMiddleware('image', 'images/product'), postAdminCreateProduct);
+    router.post("/admin/update-product", fileUploadMiddleware('image', 'images/product'), postUpdateProduct);
+    router.post("/admin/delete-product/:id", postDeleteProduct);
+    router.get("/admin/product-detail/:id", getUpdateProductPage)
 
 
 
     //admin order
     router.get("/admin/order", getAdminOrderPage);
 
-    //client routes
+    //login & register
+    router.get("/login", getLoginPage);
+    router.get("/register", getRegisterPage);
+    router.post("/register", postRegister)
 
     //
     app.use("/", router);

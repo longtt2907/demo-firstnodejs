@@ -3,6 +3,7 @@ import "dotenv/config";
 import webRoutes from "routes/web";
 import getConnection from "config/database";
 import { init_database } from "config/seed";
+import * as z from "zod";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -24,6 +25,7 @@ webRoutes(app);
 
 //init database
 init_database();
+
 
 //config database
 getConnection();
