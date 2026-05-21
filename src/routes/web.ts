@@ -2,9 +2,11 @@ import express, { Express } from "express";
 import { getHomePage, getCreateUserPage, postCreateUser, postDeleteUser, getViewUser, postUpdateUser } from "controllers/user.controller";
 import { getAdminOrderPage, getAdminProductPage, getAdminUserPage, getDashBoardPage } from "controllers/admin/dashboard";
 import fileUploadMiddleware from "src/middleware/multer";
-import { getProductDetailPage } from "controllers/client/client.controller";
-import { getAdminCreateProductPage, getUpdateProductPage, postAdminCreateProduct, postDeleteProduct, postUpdateProduct } from "controllers/admin/product.controller";
-import { getLoginPage, getRegisterPage, postRegister } from "controllers/client/auth.controller";
+import { getCartPage, getProductDetailPage } from "controllers/client/client.controller";
+import { getAdminCreateProductPage, getUpdateProductPage, postAddProductToCart, postAdminCreateProduct, postDeleteProduct, postDeleteProductInCart, postUpdateProduct } from "controllers/admin/product.controller";
+import { getLoginPage, getRegisterPage, getSuccessRedirectPage, postLogout, postRegister } from "controllers/client/auth.controller";
+import passport from "passport";
+import { isAdmin, isLogin } from "src/middleware/auth";
 const router = express.Router();
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -50,10 +52,21 @@ const webRoutes = (app: Express) => {
 
     //login & register
     router.get("/login", getLoginPage);
+    router.get("/success-redirect", getSuccessRedirectPage)
+    router.post("/login", passport.authenticate('local', {
+        successRedirect: '/success-redirect',
+        failureRedirect: '/login',
+        failureMessage: true
+    }));
     router.get("/register", getRegisterPage);
     router.post("/register", postRegister)
+    router.post("/logout", postLogout)
 
-    //
-    app.use("/", router);
+
+    //add to cart 
+    router.post("/add-product-to-cart/:id", postAddProductToCart);
+    router.post("/delete-product-in-cart/:id", postDeleteProductInCart)
+    router.get("/cart", getCartPage);
+    app.use("/", isAdmin, router);
 }
 export default webRoutes;

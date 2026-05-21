@@ -7,11 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.MediumText
+  expiresAt DateTime
+}
+
+// User and Role
 model User {
-  // id          Int     @id @default(autoincrement())
-  // name    String? @db.VarChar(255)
-  // email   String? @db.VarChar(255)
-  // address String? @db.VarChar(255)
   id          Int     @id @default(autoincrement())
   username    String  @unique @db.VarChar(255)
   password    String  @db.VarChar(255)
@@ -21,8 +25,9 @@ model User {
   accountType String  @db.VarChar(255)
   avatar      String? @db.VarChar(255)
 
-  role   Role @relation(fields: [roleId], references: [id])
+  role   Role  @relation(fields: [roleId], references: [id])
   roleId Int
+  cart   Cart?
 
   @@map("users")
 }
@@ -37,6 +42,7 @@ model Role {
   @@map("roles")
 }
 
+//
 model Order {
   id         Int @id @default(autoincrement())
   totalPrice Int
@@ -56,5 +62,31 @@ model Product {
   factory    String  @db.VarChar(255)
   target     String  @db.VarChar(255)
 
+  cartDetail CartDetail[]
+
   @@map("products")
+}
+
+model Cart {
+  id  Int @id @default(autoincrement())
+  sum Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  cartDetails CartDetail[]
+
+  @@map("carts")
+}
+
+model CartDetail {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  price     Int
+  cartId    Int
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("cart_detail")
 }

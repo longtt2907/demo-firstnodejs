@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createProduct, deleteProduct, getProductById, updateProduct } from "services/admin/product.service";
+import { addProductToCart, deleteProductInCart } from "services/client/item.service";
 import { ProductSchema, TProductSchema } from "src/validattion/product.schema";
 
 const factoryOptions = [
@@ -88,8 +89,35 @@ const getUpdateProductPage = async (req: Request, res: Response) => {
 
     return res.render("admin/product/detail.ejs", { errors, product, factoryOptions, targetOptions });
 }
-const postUpdateProductPage = async (req: Request, res: Response) => {
-    const { id, name, price, detailDesc, shortDesc, quantity, factory, target } = req.body as TProductSchema;
-    return res.redirect("/admin/product");
+// const postUpdateProductPage = async (req: Request, res: Response) => {
+//     const { id, name, price, detailDesc, shortDesc, quantity, factory, target } = req.body as TProductSchema;
+//     return res.redirect("/admin/product");
+// }
+
+const postAddProductToCart = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+    if (user) {
+        await addProductToCart(+id, 1, user);
+        return res.redirect(
+            "/"
+        )
+    }
+    else {
+        return res.redirect("/login");
+    }
+
 }
-export { postAdminCreateProduct, getAdminCreateProductPage, postDeleteProduct, postUpdateProduct, getUpdateProductPage }
+const postDeleteProductInCart = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+    if (user) {
+        await deleteProductInCart(+id, user, user.sumCart ?? 0);
+    }
+    else {
+        return res.redirect("/login");
+    }
+    return res.redirect("/cart")
+}
+
+export { postDeleteProductInCart, postAddProductToCart, postAdminCreateProduct, getAdminCreateProductPage, postDeleteProduct, postUpdateProduct, getUpdateProductPage }

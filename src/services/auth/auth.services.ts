@@ -1,6 +1,7 @@
 import { prisma } from "config/client";
 import * as bcrypt from "bcrypt";
 import { ACCOUNT_TYPE } from "config/constants";
+import { comparePassword } from "services/admin/user.service";
 const saltRounds = 10;
 const hashPassword = async (plainText: string) => {
     return await bcrypt.hash(plainText, saltRounds);
@@ -16,16 +17,45 @@ const isEmailExist = async (email: string) => {
 }
 const registerNewUser = async (fullName: string, email: string, password: string) => {
     const defaultPassword = await hashPassword(password);
-    const newUser = await prisma.user.create({
-        data: {
-            username: email,
-            password: defaultPassword,
-            accountType: ACCOUNT_TYPE.SYSTEM,
-            roleId: 2,
-
-        }
+    const userRole = await prisma.role.findUnique({
+        where: { name: "USER" }
     })
-    return newUser;
+    if (userRole) {
+        const newUser = await prisma.user.create({
+            data: {
+                fullName: fullName,
+                username: email,
+                password: defaultPassword,
+                accountType: ACCOUNT_TYPE.SYSTEM,
+                roleId: userRole?.id,
+
+            }
+        })
+        return newUser;
+    }
+    else {
+        throw new Error("User role khong ton tai");
+    }
 }
 
-export { isEmailExist, registerNewUser }
+const getUserWithRoleById = async (id: string) => {
+    const user = await prisma.user.findUnique({
+        where: { id: +id },
+        include: {
+            role: true,
+            cart: true,
+        }, omit: {
+            password: true
+        }
+    })
+    return user;
+}
+const getUserSumCart = async (id: string) => {
+    const user = await prisma.cart.findUnique({
+        where: { userId: +id },
+    })
+    return user?.sum ?? 0;
+}
+
+
+export { isEmailExist, registerNewUser, getUserWithRoleById, getUserSumCart }
