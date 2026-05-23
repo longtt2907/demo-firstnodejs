@@ -1,4 +1,5 @@
 import { prisma } from "config/client";
+import { error } from "console";
 
 const getProducts = async () => {
     const products = await prisma.product.findMany();
@@ -126,5 +127,121 @@ const getUserCart = async (id: number) => {
     }
     return [];
 }
+const updateCartDetailBeforeCheckout = async (currentCartDetail: { id: string, quantity: string }[], userId: number) => {
+    let sum = 0;
+    for (let i = 0; i < currentCartDetail.length; i++) {
+        sum += +currentCartDetail[i].quantity;
+        await prisma.cartDetail.update({
+            where: {
+                id: +currentCartDetail[i].id
+            },
+            data: {
+                quantity: +currentCartDetail[i].quantity
+            }
+        })
+    }
+    await prisma.cart.update({
+        where: {
+            userId: userId
+        },
+        data: {
+            sum: sum,
+        }
+    })
+}
+const handlePlaceOrder = async (user: Express.User, name: string, address: string, phone: string) => {
+    try {
+        await prisma.$transaction(async (tx) => {
+            const cart = await tx.cart.findUnique({
+                where: {
+                    userId: user.id
+                },
+                include: {
+                    cartDetails: true
+                }
+            })
+            if (cart) {
+                const totalPrice = cart?.cartDetails?.map(product => +product.price * +product.quantity)?.reduce((a, b) => a + b, 0)
+                const dataOrderDetail = cart?.cartDetails?.map(item => ({
+                    productId: item.productId,
+                    price: item.price,
+                    quantity: item.quantity
+                })) ?? []
 
-export { getProducts, getProductsByID, addProductToCart, getUserCart, deleteProductInCart }
+                //create
+                await tx.order.create({
+                    data: {
+                        userId: user.id,
+                        receiverName: name,
+                        receiverAddress: address,
+                        receiverPhone: phone,
+                        paymentMethod: "COD",
+                        paymentStatus: "PAYMENT_UNPAID",
+                        totalPrice: totalPrice,
+                        orderDetail: {
+                            create: dataOrderDetail
+                        }
+                    }
+                })
+
+                //remove
+                await tx.cartDetail.deleteMany({
+                    where: {
+                        cartId: cart.id
+                    }
+                })
+                await tx.cart.delete({
+                    where: {
+                        id: cart.id
+                    }
+                })
+                for (let i = 0; i < cart.cartDetails.length; i++) {
+                    const productId = cart.cartDetails[i].productId;
+                    const product = await tx.product.findUnique({
+                        where: {
+                            id: productId
+                        }
+                    })
+                    if (!product || product.quantity < cart.cartDetails[i].quantity) {
+                        throw new Error(`Sản phẩm ${product?.name} không tồn tại hoặc không đủ số lượng`)
+                    }
+                    await tx.product.update({
+                        where: {
+                            id: productId
+                        },
+                        data: {
+                            quantity: {
+                                decrement: cart.cartDetails[i].quantity
+                            },
+                            sold: {
+                                increment: cart.cartDetails[i].quantity
+                            }
+                        }
+                    })
+                }
+
+            }
+        })
+        return ""
+    } catch (error) {
+        return (error as Error).message;
+    }
+
+}
+const getOrderListByUserId = async (id: number) => {
+    const orderList = await prisma.order.findMany({
+        where: {
+            userId: +id
+        },
+        include: {
+            orderDetail: {
+                include: {
+                    product: true
+                }
+            }
+        }
+    })
+    return orderList;
+}
+
+export { handlePlaceOrder, updateCartDetailBeforeCheckout, getProducts, getProductsByID, addProductToCart, getUserCart, deleteProductInCart, getOrderListByUserId }

@@ -41,7 +41,6 @@ const configPassportLocal = () => {
             const { id, username } = user;
             const userdb: any = await getUserWithRoleById(id);
             const sumCart = await getUserSumCart(id);
-            console.log(sumCart);
             return cb(null, { ...userdb, sumCart: sumCart });
         });
     });

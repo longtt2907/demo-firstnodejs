@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createProduct, deleteProduct, getProductById, updateProduct } from "services/admin/product.service";
-import { addProductToCart, deleteProductInCart } from "services/client/item.service";
+import { addProductToCart, deleteProductInCart, handlePlaceOrder, updateCartDetailBeforeCheckout } from "services/client/item.service";
 import { ProductSchema, TProductSchema } from "src/validattion/product.schema";
 
 const factoryOptions = [
@@ -108,6 +108,21 @@ const postAddProductToCart = async (req: Request, res: Response) => {
     }
 
 }
+const postAddProductToCartinDetail = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+    const { quantity } = req.body
+    if (user) {
+        await addProductToCart(+id, +quantity, user);
+        return res.redirect(
+            "/"
+        )
+    }
+    else {
+        return res.redirect("/login");
+    }
+
+}
 const postDeleteProductInCart = async (req: Request, res: Response) => {
     const { id } = req.params;
     const user = req.user;
@@ -120,4 +135,23 @@ const postDeleteProductInCart = async (req: Request, res: Response) => {
     return res.redirect("/cart")
 }
 
-export { postDeleteProductInCart, postAddProductToCart, postAdminCreateProduct, getAdminCreateProductPage, postDeleteProduct, postUpdateProduct, getUpdateProductPage }
+const postHandleCartToCheckout = async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user) return res.redirect("/login");
+    const currentCartDetail: { id: string, quantity: string }[] = req.body?.cartDetails ?? 0;
+    await updateCartDetailBeforeCheckout(currentCartDetail, user.id);
+
+    return res.redirect("/checkout");
+}
+const postPlaceOrder = async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user) return res.redirect("/login");
+    const { receiverName, receiverAddress, receiverPhone } = req.body;
+    const message = await handlePlaceOrder(user, receiverName, receiverAddress, receiverPhone)
+    if (message) {
+        return res.redirect("/checkout");
+    }
+    return res.redirect("/thanks");
+}
+
+export { postAddProductToCartinDetail, postPlaceOrder, postHandleCartToCheckout, postDeleteProductInCart, postAddProductToCart, postAdminCreateProduct, getAdminCreateProductPage, postDeleteProduct, postUpdateProduct, getUpdateProductPage }

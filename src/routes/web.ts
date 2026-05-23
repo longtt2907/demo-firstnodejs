@@ -1,9 +1,9 @@
 import express, { Express } from "express";
 import { getHomePage, getCreateUserPage, postCreateUser, postDeleteUser, getViewUser, postUpdateUser } from "controllers/user.controller";
-import { getAdminOrderPage, getAdminProductPage, getAdminUserPage, getDashBoardPage } from "controllers/admin/dashboard";
+import { getAdminOrderPage, getAdminProductPage, getAdminUserPage, getDashBoardPage, getOrderDetailPage } from "controllers/admin/dashboard";
 import fileUploadMiddleware from "src/middleware/multer";
-import { getCartPage, getProductDetailPage } from "controllers/client/client.controller";
-import { getAdminCreateProductPage, getUpdateProductPage, postAddProductToCart, postAdminCreateProduct, postDeleteProduct, postDeleteProductInCart, postUpdateProduct } from "controllers/admin/product.controller";
+import { getCartPage, getCheckoutPage, getOrderHistoryPage, getProductDetailPage, getThanksPage } from "controllers/client/client.controller";
+import { getAdminCreateProductPage, getUpdateProductPage, postAddProductToCart, postAddProductToCartinDetail, postAdminCreateProduct, postDeleteProduct, postDeleteProductInCart, postHandleCartToCheckout, postPlaceOrder, postUpdateProduct } from "controllers/admin/product.controller";
 import { getLoginPage, getRegisterPage, getSuccessRedirectPage, postLogout, postRegister } from "controllers/client/auth.controller";
 import passport from "passport";
 import { isAdmin, isLogin } from "src/middleware/auth";
@@ -49,6 +49,8 @@ const webRoutes = (app: Express) => {
 
     //admin order
     router.get("/admin/order", getAdminOrderPage);
+    router.get("/admin/order-detail/:id", getOrderDetailPage)
+
 
     //login & register
     router.get("/login", getLoginPage);
@@ -67,6 +69,19 @@ const webRoutes = (app: Express) => {
     router.post("/add-product-to-cart/:id", postAddProductToCart);
     router.post("/delete-product-in-cart/:id", postDeleteProductInCart)
     router.get("/cart", getCartPage);
+    router.post("/add-product-to-cart-in-detail/:id", postAddProductToCartinDetail)
+
+    //checkout
+    router.post("/handle-cart-to-checkout", postHandleCartToCheckout);
+    router.get("/checkout", getCheckoutPage);
+    router.post("/place-order", postPlaceOrder)
+    router.get("/thanks", getThanksPage);
+
+    //order-history
+    router.get("/order-history", getOrderHistoryPage)
+
     app.use("/", isAdmin, router);
+
+
 }
 export default webRoutes;
