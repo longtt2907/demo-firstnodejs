@@ -1,12 +1,30 @@
 
 import { Request, Response } from "express";
-import { getOrderListByUserId, getProducts, getProductsByID, getUserCart } from "services/client/item.service";
+import { productFilter1, productFilter2, productFilter3, productFilter4, productFilter5, userFilter } from "services/client/filter.service";
+import { countTotalProductClientPages, getOrderListByUserId, getProducts, getProductsByID, getUserCart } from "services/client/item.service";
+import { getProductsWithFilter } from "services/client/product.filter";
 const getProductDetailPage = async (req: Request, res: Response) => {
     const { id } = req.params;
     const product = await getProductsByID(id as string);
     return res.render("client/product/detail.ejs", {
         product
     });
+}
+const getProductFilterPage = async (req: Request, res: Response) => {
+    const { page, factory = "", target = "", price = "", sort = "" } = req.query as {
+        page?: string;
+        factory?: string;
+        target?: string;
+        price?: string;
+        sort?: string;
+    };
+    const currentPage = page ? +page : 1;
+    // const totalPages = await countTotalProductClientPages(6);
+    // const products = await getProducts(currentPage, 6);
+    const { totalPages, products } = await getProductsWithFilter(currentPage, 6, factory, target, price, sort);
+    return res.render("client/product/filter", {
+        products, totalPages, page: currentPage
+    })
 }
 const getCartPage = async (req: Request, res: Response) => {
 
@@ -47,4 +65,4 @@ const getOrderHistoryPage = async (req: Request, res: Response) => {
 
 
 
-export { getProductDetailPage, getCartPage, getCheckoutPage, getThanksPage, getOrderHistoryPage }
+export { getProductDetailPage, getCartPage, getCheckoutPage, getThanksPage, getOrderHistoryPage, getProductFilterPage }

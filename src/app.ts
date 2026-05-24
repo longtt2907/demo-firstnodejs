@@ -10,6 +10,7 @@ import session from "express-session";
 import passport from "passport";
 import { PrismaClient } from "@prisma/client";
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { apiRoutes } from "routes/api";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -60,6 +61,10 @@ app.use((req, res, next) => {
 
 //config routes
 webRoutes(app);
+
+
+//api routes
+apiRoutes(app);
 
 
 //init database
